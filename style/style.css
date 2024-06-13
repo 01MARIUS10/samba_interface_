@@ -4,6 +4,9 @@
     padding: 0;
     box-sizing: border-box;
 }
+ul{
+    list-style: none;
+}
 .gap-3{
     gap: 10px;
 }
@@ -66,4 +69,5 @@ main > div:nth-child(8){
     overflow-x: hidden;
     overflow-y: scroll;
     scrollbar-width: none;
+    max-width: calc(100vw - 60px);
 }
