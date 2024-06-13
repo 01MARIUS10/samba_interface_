@@ -4,7 +4,7 @@
 /* **************************************************************** */
 
 class UserGroup {
-    public static function getAllUser() {
+    private static function getAllUser() {
         // Déclaration pour stocker la valeur de retour
         $USERS = [];
 
@@ -27,7 +27,7 @@ class UserGroup {
 
     /* **************************************************************** */
 
-    public static function getAllUserInGroup($groupName) {
+    private static function getAllUserInGroup($groupName) {
         // Déclaration pour stocker la valeur de retour
         $USERS = [];
 
@@ -45,7 +45,7 @@ class UserGroup {
 
     /* **************************************************************** */
 
-    public static function getGroupId($groupName) {
+    private static function getGroupId($groupName) {
         $command = "awk -F: '/^". $groupName. ":/ {print $3}' /etc/group";
         $output = exec($command);
 
@@ -68,16 +68,42 @@ class UserGroup {
         return explode("\n", $output);
     }
     
+    /* **************************************************************** */
+
+    private static function getAllGroups() {
+        // LA variable qui va contenir tous ls groups
+        $GROUPS = [];
+        
+        // COmmande
+        $command = "getent group | cut -d: -f1";
+        
+        exec($command, $output);
+
+        return $output;
+    }
+    
+    /* **************************************************************** */
+    public static function getAllGroupsDetails() {
+
+    }
+
+    /* **************************************************************** */
+
+    public static function debug() {
+        $ALL_USERS                  = UserGroup::getAllUser();
+        $ALL_USERS_INSIDE_GROUP     = UserGroup::getAllUserInGroup('sudo');
+        $ID_ROOT                    = UserGroup::getGroupId('root');
+        $FOLDER_OWNED_BY_ROOT       = UserGroup::getAllFilesOwnedByGroup('misa2026', '.');
+        UserGroup::getAllGroups();
+    }
+
+    /* **************************************************************** */
 
 };
 
 /* **************************************************************** */
 
-$ALL_USERS                  = UserGroup::getAllUser();
-$ALL_USERS_INSIDE_GROUP     = UserGroup::getAllUserInGroup('sudo');
-$ID_ROOT                    = UserGroup::getGroupId('root');
-$FOLDER_OWNED_BY_ROOT       = UserGroup::getAllFilesOwnedByGroup('misa2026', '.');
-
+UserGroup::debug();
 
 /* **************************************************************** */
 
