@@ -1,19 +1,19 @@
 <?php 
 class UserGroup {
-    public static function getAll() {
-        $GROUPS = [];
+    public static function getAllUser() {
+        $USERS = [];
         $command = "cat /etc/passwd | cut -d: -f1";
         $output = shell_exec($command);
-        $group_list = explode("\n", $output); 
+        $user_list = explode("\n", $output); 
         
-        foreach($group_list as $group )
-            if($group !== "")
-                $GROUPS[] = $group;
+        foreach($user_list as $user )
+            if($user !== "")
+                $USERS[] = $user;
 
-        return $GROUPS;
+        return $USERS;
     }
 
-    public static function getAllUser($groupName) {
+    public static function getAllUserInGroup($groupName) {
         $USERS = [];
 
         $command = "getent group " .$groupName . " | cut -d: -f4 | tr ',' '\n'";
@@ -23,9 +23,22 @@ class UserGroup {
 
         return $USERS;
     }
+
+    public static function getGroupId($groupName) {
+        $command = "awk -F: '/^". $groupName. ":/ {print $3}' /etc/group";
+        $output = exec($command);
+
+        return $output;
+    }    
+
+    
+
 };
 
-$GROUPS = UserGroup::getAll();
-$USERS = UserGroup::getAllUser('sudo');
-var_dump($USERS);
+$GROUPS  = UserGroup::getAllUser();
+$USERS   = UserGroup::getAllUserInGroup('sudo');
+$ID_ROOT = UserGroup::getGroupId('root');
+
+// echo "sudoers \n"; var_dump($GROUPS);
+echo $ID_ROOT;
 ?>

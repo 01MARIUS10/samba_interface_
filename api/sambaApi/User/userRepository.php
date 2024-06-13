@@ -19,11 +19,19 @@ class UserRepository{
             $u['Groups'] = shell_exec('groups '.$userline[0]);
             $u['repertoire'] = $userline[6];
 
+
             array_push($USER,$u);
 
         }
 
         return  json_encode($USER);
+    }
+
+    public static function getGroupId($groupName) {
+        $command = "awk -F: '/^". $groupName. ":/ {print $3}' /etc/group";
+        $output = exec($command);
+
+        return $output;
     }
 
 }
