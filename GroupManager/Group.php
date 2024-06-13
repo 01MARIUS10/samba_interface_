@@ -12,8 +12,20 @@ class UserGroup {
 
         return $GROUPS;
     }
+
+    public static function getAllUser($groupName) {
+        $USERS = [];
+
+        $command = "getent group " .$groupName . " | cut -d: -f4 | tr ',' '\n'";
+        $output = shell_exec($command);
+
+        $USERS = explode(' ', $output);
+
+        return $USERS;
+    }
 };
 
 $GROUPS = UserGroup::getAll();
-var_dump($GROUPS);
+$USERS = UserGroup::getAllUser('sudo');
+var_dump($USERS);
 ?>
