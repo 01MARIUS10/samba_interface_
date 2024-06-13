@@ -31,14 +31,19 @@ class UserGroup {
         return $output;
     }    
 
+    public static function getAllFileOwnedBy($groupName, $pathFolder) {
+        $output = exec('sh ../scriptBash/findFolderOwner.sh '.$groupName . $pathFolder);
+    }
     
 
 };
 
-$GROUPS  = UserGroup::getAllUser();
-$USERS   = UserGroup::getAllUserInGroup('sudo');
-$ID_ROOT = UserGroup::getGroupId('root');
+$GROUPS                 = UserGroup::getAllUser();
+$USERS                  = UserGroup::getAllUserInGroup('sudo');
+$ID_ROOT                = UserGroup::getGroupId('root');
+$FOLDER_OWNED_BY_ROOT   = UserGroup::getAllFileOwnedBy('sudo', '~');
 
 // echo "sudoers \n"; var_dump($GROUPS);
-echo $ID_ROOT;
+// echo $ID_ROOT;
+echo $FOLDER_OWNED_BY_ROOT;
 ?>
