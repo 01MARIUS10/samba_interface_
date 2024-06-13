@@ -1,11 +1,18 @@
 <?php
-$targetDir = "chemin/vers/vos/fichiers/";
-$fileName = basename($_FILES["file"]["name"]);
-$targetFilePath = $targetDir. $fileName;
+// Chemin vers le dossier où les fichiers seront stockés
+$folderPath = '/home/marius/Documents/COURS/Mr_Haga/Interface_samba/samba_interface_';
 
-if (move_uploaded_file($_FILES["file"]["tmp_name"], $targetFilePath)) {
-    echo json_encode(["success" => true, "message" => "Fichier téléchargé avec succès."]);
+// Vérifier si un fichier a été posté
+if (isset($_FILES['file'])) {
+    $file = $_FILES['file'];
+    $target_file = "$folderPath/" . basename($file["name"]);
+
+    // Valider le fichier (exemple simplifié)
+    if (move_uploaded_file($file["tmp_name"], $target_file)) {
+        echo "Fichier uploadé avec succès.";
+    } else {
+        echo "Erreur lors de l'upload du fichier.";
+    }
 } else {
-    echo json_encode(["success" => false, "message" => "Erreur lors du téléchargement du fichier."]);
+    echo "Aucun fichier n'a été posté.";
 }
-?>
