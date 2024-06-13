@@ -1,11 +1,19 @@
 <?php 
-class Group {
-    public function ajouterUser($user, $group) {
-        exec("sudo gpasswd " . $user . " -a " . $group);
+class UserGroup {
+    public static function getAll() {
+        $GROUPS = [];
+        $command = "cat /etc/passwd | cut -d: -f1";
+        $output = shell_exec($command);
+        $group_list = explode("\n", $output); 
+        
+        foreach($group_list as $group )
+            if($group !== "")
+                $GROUPS[] = $group;
+
+        return $GROUPS;
     }
 };
 
-$grp = new Group();
-$resp = $grp->ajouterUser('misa2026', 'smbd');
-echo($resp)
+$GROUPS = UserGroup::getAll();
+var_dump($GROUPS);
 ?>
