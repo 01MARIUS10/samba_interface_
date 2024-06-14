@@ -93,7 +93,7 @@ class UserGroup {
         $ALL_USERS                  = UserGroup::getAllUser();
         $ALL_USERS_INSIDE_GROUP     = UserGroup::getAllUserInGroup('sudo');
         $ID_ROOT                    = UserGroup::getGroupId('root');
-        $FOLDER_OWNED_BY_ROOT       = UserGroup::getAllFilesOwnedByGroup('misa2026', '.');
+        $FOLDER_OWNED_BY_ROOT       = UserGroup::getAllFilesOwnedByGroup('misa2026', '/var/share');
         UserGroup::getAllGroups();
     }
 
