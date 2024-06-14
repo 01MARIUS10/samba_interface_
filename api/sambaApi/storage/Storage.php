@@ -12,6 +12,7 @@
 
                 $storageline = explode(' ',$storage);
                     settype($storageline[4],'integer');
+                    global $u;
                 $u = [
                 'id' => $key,
                 'Nom' => isset($storageline[8])? $storageline[8] : '',
@@ -30,10 +31,17 @@
             echo "<pre>$element</pre>";
             }
         }
-        }
     }
-   $storageListe=Storage::getAll();
-   
-    
-    
+     // set value
+     public static function setAll(){
+        // Storage::getAll();  
+        $i="J";
+        var_dump($i);
+        $command1="cd /var/share | mkdir $i | cd - | ls -l /var/share";
+        $output1=shell_exec($command1);
+            echo "<pre>$output1</pre>";
+    }
+    }
+   Storage::setAll();  
+
 ?>
