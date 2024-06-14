@@ -115,12 +115,15 @@ class UserGroup
     /* **************************************************************** */
 
     public static function addUnixUserToSamba($username, $passwd) {
-        $command = "sudo smbpasswd -a {$username} <<< {$passwd}";
-        $output = shell_exec($command);
-        $command = "sudo smbpasswd -e {$username} <<< {$passwd}";
-        $output = shell_exec($command);
+        $command = "(echo {$passwd} ; echo {$passwd}) | sudo smbpasswd -as {$username} 1> /dev/null";
+        shell_exec($command);
+    }
 
-        return $output;
+    /* **************************************************************** */
+
+    public static function removeUserSamba( $username ) {
+        $command = "sudo pdbedit -x {$username}";
+        shell_exec($command);
     }
 
     /* **************************************************************** */
@@ -140,6 +143,9 @@ class UserGroup
         );
     }
     
+    /* **************************************************************** */
+
+
     /* **************************************************************** */
 };
 
