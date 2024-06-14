@@ -71,9 +71,6 @@ class UserGroup {
     /* **************************************************************** */
 
     private static function getAllGroups() {
-        // LA variable qui va contenir tous ls groups
-        $GROUPS = [];
-        
         // COmmande
         $command = "getent group | cut -d: -f1";
         
@@ -84,6 +81,8 @@ class UserGroup {
     
     /* **************************************************************** */
     public static function getAllGroupsDetails() {
+        $GROUPS = UserGroup::getAllGroups();
+        var_dump($GROUPS);
 
     }
 
