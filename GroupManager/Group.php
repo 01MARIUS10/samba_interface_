@@ -112,10 +112,19 @@ class UserGroup
 
     public static function getAllUserSamba()
     {
-        $command = "sudo pdbedit -Lv | sed -e 's/[[:blank:]]\{2,\}/ /g' | grep 'Unix' | cut -d' ' -f3";
+        // On enleve les espaces de trop
+        // $command = "sudo pdbedit -Lv | sed -e 's/[[:blank:]]\{2,\}/ /g' | grep 'Unix' | cut -d' ' -f3";
+        // On enleve le 
+        $command = "sudo pdbedit -L | cut -d: -f1";
         $output  = shell_exec($command);
+        $output = explode("\n", $output);
+        $USERS_SAMBA = [];
 
-        return $output;
+        foreach( $output as $user )
+            if ($user !== "")
+                $USERS_SAMBA[] = $user;
+
+        return $USERS_SAMBA;
     }
 
     /* **************************************************************** */
