@@ -1,5 +1,6 @@
 <?php
     $result = [];
+    $resultFile=[];
 
     function formatLsLine($currentPath , $line){
         try {
@@ -13,7 +14,7 @@
     
             
             return [
-                "path"=>$path,
+                "path"=>realpath($path),
                 "size"=>$size,
                 "permission"=>$permission,
                 "user"=>$user,
@@ -29,36 +30,32 @@
 
     if(isset($_GET['path'])){
         $path = $_GET['path'];
+        $path = realpath($path);
         $output = shell_exec("ls -al --time-style='+%d-%m-%Y %H:%M' $path ");
         $lines = explode("\n",$output);
+
        
 
 
         foreach($lines as $key =>$line){
             if($key==0){
-                print_r($line);
+                // print_r($line);
                 // $result[0]=[
                 // ];
 
             }
             else if($line != ""){
-                if($line[0]=='d'){
-                    echo '<br> folder';
-                }
-                if($line[0]==''){
-                    echo '<br> void';
-                }
                 // print_r($line);
-                array_push($result , formatLsLine($path,preg_split('/\s+/', $line)));
+                $a = formatLsLine($path,preg_split('/\s+/', $line));
+                if($a['is_folder']) { array_push($result , $a);}
+                else{array_push($resultFile,$a);}
+                
+                
                 // print_r();
                 // print_r(preg_split('/\s+/', $line));
             }
         }
     };
-    echo "<pre>";
-    print_r($result);
-    echo "</pre>";
-
-
-
+    array_push($result,...$resultFile);
+    echo json_encode($result);
 ?>
