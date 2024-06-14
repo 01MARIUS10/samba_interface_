@@ -95,21 +95,6 @@ class UserGroup
 
     /* **************************************************************** */
 
-    public static function debug()
-    {
-        $ALL_USERS                  = UserGroup::getAllUser();
-        $ALL_USERS_INSIDE_GROUP     = UserGroup::getAllUserInGroup('sudo');
-        $ID_ROOT                    = UserGroup::getGroupId('root');
-        $FOLDER_OWNED_BY_ROOT       = UserGroup::getAllFilesOwnedByGroup('misa2026', '/var/share');
-        $ALL_SAMBA_USERS            = UserGroup::getAllUserSamba();
-
-        var_dump(
-            $ALL_SAMBA_USERS
-        );
-    }
-
-    /* **************************************************************** */
-
     public static function getAllUserSamba()
     {
         // On enleve les espaces de trop
@@ -127,6 +112,34 @@ class UserGroup
         return $USERS_SAMBA;
     }
 
+    /* **************************************************************** */
+
+    public static function addUnixUserToSamba($username, $passwd) {
+        $command = "sudo smbpasswd -a {$username} <<< {$passwd}";
+        $output = shell_exec($command);
+        $command = "sudo smbpasswd -e {$username} <<< {$passwd}";
+        $output = shell_exec($command);
+
+        return $output;
+    }
+
+    /* **************************************************************** */
+
+    public static function debug()
+    {        
+        $ALL_USERS                  = UserGroup::getAllUser();
+        $ALL_USERS_INSIDE_GROUP     = UserGroup::getAllUserInGroup('sudo');
+        $ID_ROOT                    = UserGroup::getGroupId('root');
+        $FOLDER_OWNED_BY_ROOT       = UserGroup::getAllFilesOwnedByGroup('misa2026', '/var/share');
+        $ALL_SAMBA_USERS            = UserGroup::getAllUserSamba();
+        $ADDING_UNIX_USER_TO_SAMBA  = UserGroup::addUnixUserToSamba('misa2026', "toavina");
+        
+        var_dump(
+            $ALL_SAMBA_USERS,
+            $ADDING_UNIX_USER_TO_SAMBA
+        );
+    }
+    
     /* **************************************************************** */
 };
 
