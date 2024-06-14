@@ -37,9 +37,6 @@
         foreach($lines as $key =>$line){
             if($key==0){
                 print_r($line);
-                // $result[0]=[
-                // ];
-
             }
             else if($line != ""){
                 if($line[0]=='d'){
@@ -48,10 +45,7 @@
                 if($line[0]==''){
                     echo '<br> void';
                 }
-                // print_r($line);
                 array_push($result , formatLsLine($path,preg_split('/\s+/', $line)));
-                // print_r();
-                // print_r(preg_split('/\s+/', $line));
             }
         }
     };
