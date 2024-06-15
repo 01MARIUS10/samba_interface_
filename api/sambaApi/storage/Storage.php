@@ -19,28 +19,53 @@ class Storage
                 $group=$array[3];
                 $storage = (int)$array[4];  
 
-                
-                if (isset($userStorage[$user]) || isset($groupStorage[$group]) || isset($allStorage[$storagName])) {
-                    $allStorage[$storagName]=$storage;
-                    $userStorage[$user] += $storage;
-                    $groupStorage[$group] += $storage;
-                  //   var_dump($userStorage[$user]);
-                } else {
-                  $groupStorage[$group] = $storage;
-                }
+                    //infomation for all storage
+                  
+                    $allStorage['totalStorage'] += $storage;
+                    $allStorage['directoryCount'] += 1;
+                    
+
+
+
+                    //sum user storage
+                    $userStorage['totalStorage'] += $storage;
+                    $userStorage['directoryCount'] += 1;
+
+                    //infomation for each user storage
+                    
+                    $userStorage[$user]['totalStorage'] += $storage;
+                    $userStorage[$user]['directoryCount'] += 1;
+
+                    //infomation for all user storage
+                    $userStorage[$user][$storagName]['totalStorage'] = $storage;
+                    $userStorage[$user][$storagName]['directoryCount'] += 1;
+
+                    //sum group storage
+                  
+                    $groupStorage['totalStorage'] += $storage;
+                    $groupStorage['directoryCount'] += 1;
+                    //infomation for each group storage
+
+                    $groupStorage[$group]['totalStorage'] += $storage;
+                    $groupStorage[$group]['directoryCount'] += 1;
+
+                    //infomation for all group storage
+                    $groupStorage[$group][$storagName]['totalStorage'] = $storage;
+                    $groupStorage[$group][$storagName]['directoryCount'] += 1;
+               
             }
         }
         echo "tout les stockage";
         echo "<br><br>";
-        echo json_encode($allStorage);
+        echo json_encode($allStorage,JSON_PRETTY_PRINT );
         echo "<br><br><br>";
         echo "les stockage pour chaque chaque utilisateur";
         echo "<br><br>";
-        echo json_encode($userStorage);
+        echo json_encode($userStorage,JSON_PRETTY_PRINT );
         echo "<br><br><br>";
         echo "les stockage pour chaque groupe";
         echo "<br><br>";
-        echo json_encode($groupStorage);
+        echo json_encode($groupStorage,JSON_PRETTY_PRINT );
     }
 }
 
