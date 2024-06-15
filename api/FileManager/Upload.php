@@ -16,3 +16,4 @@ if (isset($_FILES['file'])) {
 } else {
     echo "Aucun fichier n'a été posté.";
 }
+?>
