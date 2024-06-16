@@ -50,6 +50,12 @@ class UserRepository{
 
         return $output;
     }
+    public static function getGroupId($groupName) {
+        $command = "awk -F: '/^". $groupName. ":/ {print $3}' /etc/group";
+        $output = exec($command);
+
+        return $output;
+    }
 }
 
 ?>
