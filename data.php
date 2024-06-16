@@ -114,7 +114,7 @@ require_once('./api/sambaApi/User/userRepository.php');
 $users =  (UserRepository::getAll());
 
 
-require_once('/home/marius/Documents/COURS/Mr_Haga/Interface_samba/samba_interface_/GroupManager/Group.php');
+require_once('./GroupManager/Group.php');
 $groups =  (UserGroup::getAllGroups());
 // var_dump($users);
 // var_dump($users_);

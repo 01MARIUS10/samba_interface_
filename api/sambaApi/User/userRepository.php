@@ -10,22 +10,16 @@ class UserRepository
     public static  function getAll()
     {
         $USER = [];
+        $SmbdUser = UserRepository::getSambaUser();
 
         //get user in file /etc/passwd
         $command = "grep -E '^[^:][^]:[0-9]{4,}:.*' /etc/passwd | awk -F: '$3 >= 1000 {print}'";
         $output = shell_exec($command);
 
-
-
-
         $userlines = explode("\n", $output);
         foreach ($userlines as $key => $user) {
-            // echo ($user);
-            // echo '<br>';
             $userline = explode(':', $user);
-            if (count($userline) > 4) {
-                // print_r($userline);
-                // echo '<br>';
+            if (count($userline) > 4 && in_array($userline[0],$SmbdUser)) {
     
                 //format to the same array
                 $u['id'] = $key;
@@ -42,6 +36,28 @@ class UserRepository
         }
 
         return  ($USER);
+    }
+    public static function extractUser($tableau) {
+        $nomsUtilisateurs = [];
+        foreach ($tableau as $element) {
+            preg_match('/\s*:(.*)/', $element, $matches);
+            // print_r([$element,$matches]);
+            if (!empty($matches)) {
+                $nomsUtilisateurs[] = trim($matches[1]);
+            }
+        }
+        return $nomsUtilisateurs;
+    }
+
+    public static function getSambaUser(){
+        $command = "sudo pdbedit -L -v | grep '^Unix username:'"; 
+
+        $output = shell_exec($command);
+        $lines = (explode("\n",$output));
+
+        // print_r();
+
+        return UserRepository::extractUser($lines);
     }
     public static function  createUser($params)
     {
@@ -75,3 +91,5 @@ class UserRepository
         return $output;
     }
 }
+
+UserRepository::getSambaUser();
