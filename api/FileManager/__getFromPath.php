@@ -1,5 +1,6 @@
 <?php
     $result = [];
+    $resultFile=[];
 
     function formatLsLine($currentPath , $line){
         try {
@@ -13,7 +14,7 @@
     
             
             return [
-                "path"=>$path,
+                "path"=>realpath($path),
                 "size"=>$size,
                 "permission"=>$permission,
                 "user"=>$user,
@@ -29,8 +30,10 @@
 
     if(isset($_GET['path'])){
         $path = $_GET['path'];
+        $path = realpath($path);
         $output = shell_exec("ls -al --time-style='+%d-%m-%Y %H:%M' $path ");
         $lines = explode("\n",$output);
+
        
 
 
@@ -49,10 +52,6 @@
             }
         }
     };
-    echo "<pre>";
-    print_r($result);
-    echo "</pre>";
-
-
-
+    array_push($result,...$resultFile);
+    echo json_encode($result);
 ?>

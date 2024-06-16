@@ -60,6 +60,11 @@ main > div:nth-child(8){
 .nav{
     background: var(--nav-bg-color);
 }
+.bluebg{
+
+    background: var(--nav-bg-color);
+    /* color:whitesmoke; */
+}
 .component{
     background: var(--component-bg-color);
     padding: 20px;

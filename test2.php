@@ -1,10 +1,18 @@
 <?php
-// $output = shell_exec('passwd toto');
-$newPass = "re345_re3re";
-// $output = shell_exec("echo '$newPass' | echo toto ");
-$output = shell_exec("echo '$newPass' | echo '$newPass' | passwd toto");
+// Supposons que l'URL est passée en paramètre ou récupérée d'une autre manière
+$url = "http://localhost:8999/api/FileManager/__createFolder.php?path=%27/var/share";
 
-echo "$output";
+// Récupérer le paramètre 'path' de l'URL
+$path = parse_url($url, PHP_URL_QUERY);
+
+// Décoder le paramètre 'path' pour obtenir la valeur brute
+$decodedPath = urldecode($path);
+
+// Supprimer l'apostrophe initial de la chaîne
+$finalPath = substr($decodedPath, 1);
+
+echo $finalPath; // Affiche "/var/share"
+
 
 
 // $pipes = array(
