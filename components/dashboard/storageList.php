@@ -182,6 +182,14 @@
     })
 </script>
 
+
+
+<script>
+     fetch(`http://localhost:8999/api/sambaApi/storage/Storage.php`)
+            .then(e => e.json())
+            .then(res => console.log(res))
+</script>
+
 <style>
     .modal {
         position: absolute !important;

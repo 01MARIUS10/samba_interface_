@@ -31,7 +31,8 @@
         
         $data = array(
             "return "=> $bool,
-            'image_source' => $path.'/'. $newName
+            'image_source' => $path.'/'. $newName,
+            'message'=>  "Not uploaded because of error #".$_FILES["file"]["error"]
         );
         
         echo json_encode($data);

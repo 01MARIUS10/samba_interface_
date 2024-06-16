@@ -1,5 +1,5 @@
 <?php
-$users = [
+$users_ = [
 	[
 		"id" => "1",
 		"Nom" => "root",
@@ -109,6 +109,15 @@ $groups = [
 	]
 
 ];
+
+require_once('./api/sambaApi/User/userRepository.php');
+$users =  (UserRepository::getAll());
+
+
+require_once('/home/marius/Documents/COURS/Mr_Haga/Interface_samba/samba_interface_/GroupManager/Group.php');
+$groups =  (UserGroup::getAllGroups());
+// var_dump($users);
+// var_dump($users_);
 
 $storages = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 2, 1, 2, 1, 2, 1, 2, 1, 2];
 ?>

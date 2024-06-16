@@ -1,47 +1,64 @@
 <?php
 
-class UserRepository{
-    public static  function getAll(){
+
+
+
+require_once('/home/marius/Documents/COURS/Mr_Haga/Interface_samba/samba_interface_/api/sambaApi/storage/Storage.php');
+
+class UserRepository
+{
+    public static  function getAll()
+    {
         $USER = [];
 
         //get user in file /etc/passwd
-        $command = "grep -E '^[^:][^]:[0-9]{4,}:.*' /etc/passwd | awk -F: '$3 >= 1000 {print}' | sed 's/$/ |||/'";
+        $command = "grep -E '^[^:][^]:[0-9]{4,}:.*' /etc/passwd | awk -F: '$3 >= 1000 {print}'";
         $output = shell_exec($command);
 
 
-        $userlines = explode("|||",$output);
-        foreach($userlines as $key=>$user){
-            $userline = explode(':',$user);
 
-            //format to the same array
-            $u['id'] = $key;
-            $u['Nom'] = $userline[0];
-            $u['UID'] = $userline[2];
-            $u['Groups'] = shell_exec('groups '.$userline[0]);
-            $u['repertoire'] = $userline[6];
 
-            //push new element in result
-            array_push($USER,$u);
-
+        $userlines = explode("\n", $output);
+        foreach ($userlines as $key => $user) {
+            // echo ($user);
+            // echo '<br>';
+            $userline = explode(':', $user);
+            if (count($userline) > 4) {
+                // print_r($userline);
+                // echo '<br>';
+    
+                //format to the same array
+                $u['id'] = $key;
+                $u['Nom'] = $userline[0];
+                $u['UID'] = $userline[2];
+                $u['Groups'] = shell_exec('groups ' . $userline[0]);
+                $u['repertoire'] = $userline[6];
+                $u['Usage'] = Storage::getStorageSize($userline[0]);
+                $u['max-usage'] = 200000;
+    
+                //push new element in result
+                array_push($USER, $u);
+            }
         }
 
-        return  json_encode($USER);
+        return  ($USER);
     }
-    public static function  createUser($params){
-        if(!isset($params['name'])) return 0;
+    public static function  createUser($params)
+    {
+        if (!isset($params['name'])) return 0;
 
         $name = $params['name'];
 
         $dir  = (isset($params['dir'])  ?
-                $params['dir']:
-                '/home/'.$params['name']
-            );
+            $params['dir'] :
+            '/home/' . $params['name']
+        );
         $group = (isset($params['group'])  ?
-            ' -g'. $params['dir']:
+            ' -g' . $params['dir'] :
             ''
         );
         $password = (isset($params['passwd'])  ?
-            '-p $(openssl passwd -1 '.$params['passwd'].')':
+            '-p $(openssl passwd -1 ' . $params['passwd'] . ')' :
             ''
         );
         $command = "useradd -d $dir -s /bin/bash $group -m $password $name";
@@ -50,12 +67,11 @@ class UserRepository{
 
         return $output;
     }
-    public static function getGroupId($groupName) {
-        $command = "awk -F: '/^". $groupName. ":/ {print $3}' /etc/group";
+    public static function getGroupId($groupName)
+    {
+        $command = "awk -F: '/^" . $groupName . ":/ {print $3}' /etc/group";
         $output = exec($command);
 
         return $output;
     }
 }
-
-?>

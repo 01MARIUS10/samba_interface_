@@ -56,7 +56,8 @@ class UserGroup
         return $output;
     }
 
-    /* **************************************************************** */
+    /* ***************************************
+// var_dump($users_);************************* */
 
     public static function getAllFilesOwnedByGroup($groupName, $pathFolder)
     {
@@ -75,14 +76,25 @@ class UserGroup
 
     /* **************************************************************** */
 
-    private static function getAllGroups()
+    public static function getAllGroups()
     {
         // COmmande
-        $command = "getent group | cut -d: -f1";
+        $command = "getent group | cut -d: -f1,3";
+        $RESULT = [];
 
         exec($command, $output);
+        foreach ($output as $p) {
+            $e = explode(':', $p);
+            $RESULT[] = [
+                'Nom' => $e[0],
+                'GID' => $e[1],
+                "Users" => "root ",
+                "created_at" => "23-01-2023 a 12h15",
+                "storage" => 8
+            ];
+        }
 
-        return $output;
+        return $RESULT;
     }
 
     /* **************************************************************** */
@@ -105,7 +117,7 @@ class UserGroup
         $output = explode("\n", $output);
         $USERS_SAMBA = [];
 
-        foreach( $output as $user )
+        foreach ($output as $user)
             if ($user !== "")
                 $USERS_SAMBA[] = $user;
 
@@ -114,7 +126,8 @@ class UserGroup
 
     /* **************************************************************** */
 
-    public static function addUnixUserToSamba($username, $passwd) {
+    public static function addUnixUserToSamba($username, $passwd)
+    {
         $command = "sudo smbpasswd -a {$username} <<< {$passwd}";
         $output = shell_exec($command);
         $command = "sudo smbpasswd -e {$username} <<< {$passwd}";
@@ -126,26 +139,28 @@ class UserGroup
     /* **************************************************************** */
 
     public static function debug()
-    {        
+    {
         $ALL_USERS                  = UserGroup::getAllUser();
         $ALL_USERS_INSIDE_GROUP     = UserGroup::getAllUserInGroup('sudo');
         $ID_ROOT                    = UserGroup::getGroupId('root');
         $FOLDER_OWNED_BY_ROOT       = UserGroup::getAllFilesOwnedByGroup('misa2026', '/var/share');
         $ALL_SAMBA_USERS            = UserGroup::getAllUserSamba();
         $ADDING_UNIX_USER_TO_SAMBA  = UserGroup::addUnixUserToSamba('misa2026', "toavina");
-        
+
         var_dump(
-            $ALL_SAMBA_USERS,
-            $ADDING_UNIX_USER_TO_SAMBA
+            // $ALL_SAMBA_USERS,
+            // $ALL_USERS,
+            UserGroup::getAllGroups()
+            // $ADDING_UNIX_USER_TO_SAMBA
         );
     }
-    
+
     /* **************************************************************** */
 };
 
 /* **************************************************************** */
 
-UserGroup::debug();
+// UserGroup::debug();
 
 /* **************************************************************** */
 

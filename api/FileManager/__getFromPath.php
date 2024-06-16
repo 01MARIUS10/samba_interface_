@@ -39,15 +39,9 @@
 
         foreach($lines as $key =>$line){
             if($key==0){
-                print_r($line);
+                // print_r($line);
             }
             else if($line != ""){
-                if($line[0]=='d'){
-                    echo '<br> folder';
-                }
-                if($line[0]==''){
-                    echo '<br> void';
-                }
                 array_push($result , formatLsLine($path,preg_split('/\s+/', $line)));
             }
         }
