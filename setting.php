@@ -41,15 +41,11 @@ function isGroupPage()
 		</div>
 		<div id="main" class="h-100 gap-3 pt-4" style="flex-grow: 1;">
 			<div class="head d-flex justify-content-between p-3">
-				<div class="">
-					<h1>Total users :<span><?= count($users) ?></span> </h1>
-
-				</div>
-				<button class="btn btn-primary px-4" data-toggle="modal" data-target="#modalCreationUser"> Ajouter</button>
+					<h1>Setting : </h1>
 			</div>
 			<!-- -------------------------------- -->
-			<div class="component h-100" id="groupList">
-				<?php require('./components/dashboard/userList.php'); ?>
+			<div class="component h-100" id="setting">
+				<?php require('./components/setting.php'); ?>
 			</div>
 			<!-- -------------------------------- -->
 

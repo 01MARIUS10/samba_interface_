@@ -5,6 +5,9 @@
 
 class UserGroup
 {
+
+    public static $RACINEPATH = "/home/marius/Documents/COURS/Mr_Haga/Interface_samba/samba_interface_/";
+
     private static function getAllUser()
     {
         // Déclaration pour stocker la valeur de retour
@@ -83,13 +86,15 @@ class UserGroup
         $RESULT = [];
 
         exec($command, $output);
+        $ue = UserGroup::sambGrp();
         foreach ($output as $p) {
             $e = explode(':', $p);
-            if(in_array($e[0],UserGroup::sambGrp())){
+            if (isset($ue[$e[0]])) {
                 $RESULT[] = [
                     'Nom' => $e[0],
                     'GID' => $e[1],
-                    "Users" => "root ",
+                    "Path" => $ue[$e[0]]['path'],
+                    "Users" => shell_exec("getent group " . trim($e[1]) . " | cut -d: -f4"),
                     "created_at" => "23-01-2023 a 12h15",
                     "storage" => 8
                 ];
@@ -99,32 +104,48 @@ class UserGroup
         return $RESULT;
     }
 
-    public static function extractGrp($tableau) {
+    public static function extractGrp($tableau)
+    {
         $grps = [];
         foreach ($tableau as $element) {
-            preg_match('/\s*=(.*)/', $element, $matches);
-            if (!empty($matches)) {
-                $p = trim($matches[1]);
-                $ps = explode(', ',$p);
-
-                foreach($ps as $s){
-                    $s = trim($s);
-                    if($s!=''){
-                        array_push($grps,$s);
-                    }
+            // echo "<br>";
+            // echo "<br>";
+            // echo "<br>";
+            foreach ($element as $k => $e) {
+                if($k=='group'){
+                    $grps[$e]=$element;
                 }
             }
         }
         return $grps;
-
     }
 
-    public static function sambGrp(){
+    public static function sambGrp()
+    {
         $command = "grep -v '^;' /etc/samba/smb.conf | grep 'write list =' ";
         $output = shell_exec($command);
-        $lines = (explode("\n",$output));
+        $lines = (explode("\n", $output));
 
-        return UserGroup::extractGrp($lines);
+        $command = UserGroup::$RACINEPATH . "shell/group.sh";
+        $output = shell_exec($command);
+        $array = explode("\n", $output);
+        $G = [];
+        $tmpKey = 'default';
+        foreach ($array as $g) {
+            if ($g[0] == "[") {
+                $tmpKey = $g;
+            } else if ($g[0] == "P") {
+                $G[$tmpKey]['path'] = trim(str_replace("Path:", '', $g));
+            } else if ($g[0] == "G") {
+                $G[$tmpKey]['group'] = trim(str_replace("Group:", '', $g));
+            }
+        }
+
+        // var_dump($G);echo "<br>";
+
+        return UserGroup::extractGrp($G);
+
+        // return UserGroup::extractGrp($lines);
 
     }
 
@@ -143,6 +164,8 @@ class UserGroup
         // On enleve les espaces de trop
         // $command = "sudo pdbedit -Lv | sed -e 's/[[:blank:]]\{2,\}/ /g' | grep 'Unix' | cut -d' ' -f3";
         // On enleve le 
+
+
         $command = "sudo pdbedit -L | cut -d: -f1";
         $output  = shell_exec($command);
         $output = explode("\n", $output);
@@ -167,6 +190,10 @@ class UserGroup
         return $output;
     }
 
+    public static function updateGroup($user, $groupsAdd, $groupsRemove)
+    {
+    }
+
     /* **************************************************************** */
 
     public static function debug()
@@ -176,12 +203,12 @@ class UserGroup
         // $ID_ROOT                    = UserGroup::getGroupId('root');
         // $FOLDER_OWNED_BY_ROOT       = UserGroup::getAllFilesOwnedByGroup('misa2026', '/var/share');
         // $ALL_SAMBA_USERS            = UserGroup::getAllUserSamba();
-        // $ADDING_UNIX_USER_TO_SAMBA  = UserGroup::addUnixUserToSamba('misa2026', "toavina");
+        $ADDING_UNIX_USER_TO_SAMBA  = UserGroup::addUnixUserToSamba('toto', "toto");
 
         var_dump(
             // $ALL_SAMBA_USERS,
             // $ALL_USERS,
-            UserGroup::sambGrp()
+            UserGroup::getAllGroups()
             // $ADDING_UNIX_USER_TO_SAMBA
         );
     }

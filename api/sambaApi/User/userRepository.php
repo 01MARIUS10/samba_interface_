@@ -7,25 +7,39 @@ require_once('/home/marius/Documents/COURS/Mr_Haga/Interface_samba/samba_interfa
 
 class UserRepository
 {
+
+    public static $RACINEPATH = "/home/marius/Documents/COURS/Mr_Haga/Interface_samba/samba_interface_/";
+
+    public static function isIn($array,$key,$value){
+        foreach($array as $a){
+            if($a[$key]==$value){return true;}
+        }
+        return false;
+    }
     public static  function getAll()
     {
         $USER = [];
         $SmbdUser = UserRepository::getSambaUser();
+        // print_r($SmbdUser);
 
         //get user in file /etc/passwd
-        $command = "grep -E '^[^:][^]:[0-9]{4,}:.*' /etc/passwd | awk -F: '$3 >= 1000 {print}'";
+        // $command = "grep -E '^[^:][^]:[0-9]{4,}:.*' /etc/passwd | awk -F: '$3 >= 1000 {print}'";
+        $command = "grep -E '^[^:][^]:[0-9]{3,}:.*' /etc/passwd | awk -F: '$3 >= 1000 {print}'";
         $output = shell_exec($command);
+        // print_r($output);
 
         $userlines = explode("\n", $output);
         foreach ($userlines as $key => $user) {
             $userline = explode(':', $user);
-            if (count($userline) > 4 && in_array($userline[0],$SmbdUser)) {
+            // echo $userline[0];echo '<br>';
+            if (count($userline) > 4 && in_array($userline[0],$SmbdUser) && !UserRepository::isIn($USER,'Nom',$userline[0])) {
     
                 //format to the same array
-                $u['id'] = $key;
+                // $u['id'] = $key;
+                $u['id'] = count($USER)+1;
                 $u['Nom'] = $userline[0];
                 $u['UID'] = $userline[2];
-                $u['Groups'] = shell_exec('groups ' . $userline[0]);
+                $u['Groups'] = str_replace(" "," , ",trim(str_replace("$userline[0] :","",shell_exec('groups ' . $userline[0]))));
                 $u['repertoire'] = $userline[6];
                 $u['Usage'] = Storage::getStorageSize($userline[0]);
                 $u['max-usage'] = 200000;
@@ -56,10 +70,11 @@ class UserRepository
         $lines = (explode("\n",$output));
 
         // print_r();
+        // print_r($lines);
 
         return UserRepository::extractUser($lines);
     }
-    public static function  createUser($params)
+    public static function  createUnixUser($params)
     {
         if (!isset($params['name'])) return 0;
 
@@ -88,6 +103,12 @@ class UserRepository
         $command = "awk -F: '/^" . $groupName . ":/ {print $3}' /etc/group";
         $output = exec($command);
 
+        return $output;
+    }
+
+    public static function addUnixUserToSamba($user,$passwd){
+        $command = UserRepository::$RACINEPATH."shell/createUser.exp $user $passwd";
+        $output = shell_exec($command);
         return $output;
     }
 }

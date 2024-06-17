@@ -76,3 +76,7 @@ main > div:nth-child(8){
     scrollbar-width: none;
     max-width: calc(100vw - 60px);
 }
+
+.modal-backdrop {
+    background-color: #0009 !important;
+}
