@@ -35,14 +35,24 @@ class UserGroup
         $USERS = [];
 
         // Commande pour avoir tous les users dans le group donné
+        //  getent group misa2026 | cut -d: -f4 | tr ',' '\n'
         $command = "getent group " . $groupName . " | cut -d: -f4 | tr ',' '\n'";
 
         // LA sortie de la commande lorsqu'elle est executé
         $output = shell_exec($command);
 
         // On split l'output pour avoirs les listes des users dans les groupes
-        $USERS = explode(' ', $output);
+        $USERS = explode('\n', $output);
+        print_r($USERS);
 
+        foreach($USERS as $key => $user) {
+            if ($user === "\n") {
+                $user = "";
+            }
+            else {
+                $USERS [] = str_replace(["\n", "\n"],"", $user);
+            }
+        }
         return $USERS;
     }
 
@@ -90,7 +100,21 @@ class UserGroup
     public static function getAllGroupsDetails()
     {
         $GROUPS = UserGroup::getAllGroups();
-        var_dump($GROUPS);
+        // var_dump($GROUPS);
+        $ALL_GROUPS_DETAILS = [];
+        // ;die();
+
+        foreach ( $GROUPS as $group ) {
+            $GROUP_DETAILS = [];
+            $GROUP_DETAILS['ID']    = UserGroup::getGroupId($group);
+            $GROUP_DETAILS['NAME']  = $group;
+            $GROUP_DETAILS['USERS'] = UserGroup::getAllUserInGroup($group);
+            $ALL_GROUPS_DETAILS[]   = $GROUP_DETAILS;
+            
+        }
+        print_r($ALL_GROUPS_DETAILS);die();
+
+        return json_encode($ALL_GROUPS_DETAILS);
     }
 
     /* **************************************************************** */
@@ -98,16 +122,20 @@ class UserGroup
     public static function getAllUserSamba()
     {
         // On enleve les espaces de trop
-        // $command = "sudo pdbedit -Lv | sed -e 's/[[:blank:]]\{2,\}/ /g' | grep 'Unix' | cut -d' ' -f3";
+        $command = "sudo pdbedit -Lv | sed -e 's/[[:blank:]]\{2,\}/ /g' | grep 'Unix' | cut -d' ' -f3";
         // On enleve le 
-        $command = "sudo pdbedit -L | cut -d: -f1";
+        // $command = "sudo pdbedit -L | cut -d: -f1";
         $output  = shell_exec($command);
         $output = explode("\n", $output);
         $USERS_SAMBA = [];
 
-        foreach( $output as $user )
-            if ($user !== "")
+        foreach( $output as $user ) {
+            if ($user !== "") {
+                $user = str_replace(['\n', '\r'], "", $user);
                 $USERS_SAMBA[] = $user;
+            }
+
+        }
 
         return $USERS_SAMBA;
     }
@@ -138,8 +166,8 @@ class UserGroup
         $ADDING_UNIX_USER_TO_SAMBA  = UserGroup::addUnixUserToSamba('misa2026', "toavina");
         
         var_dump(
-            $ALL_SAMBA_USERS,
-            $ADDING_UNIX_USER_TO_SAMBA
+            // UserGroup::getAllUserInGroup("sudo")
+            UserGroup::getAllGroupsDetails()
         );
     }
     
