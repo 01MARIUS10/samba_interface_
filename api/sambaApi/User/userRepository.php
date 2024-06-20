@@ -1,14 +1,11 @@
 <?php
 
-
-
-
-require_once('/home/marius/Documents/COURS/Mr_Haga/Interface_samba/samba_interface_/api/sambaApi/storage/Storage.php');
+require_once('api/sambaApi/storage/Storage.php');
 
 class UserRepository
 {
 
-    public static $RACINEPATH = "/home/marius/Documents/COURS/Mr_Haga/Interface_samba/samba_interface_/";
+    public static $RACINEPATH = "./";
 
     public static function isIn($array,$key,$value){
         foreach($array as $a){
@@ -110,6 +107,11 @@ class UserRepository
         $command = UserRepository::$RACINEPATH."shell/createUser.exp $user $passwd";
         $output = shell_exec($command);
         return $output;
+    }
+
+    public static function removeUnixUserToSamba($user) {
+        $command = "sudo pdbedit -x {$user}";
+        shell_exec($command);
     }
 }
 
