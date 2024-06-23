@@ -110,14 +110,16 @@ $groups = [
 
 ];
 
-require_once('./api/sambaApi/User/userRepository.php');
+require_once('api/sambaApi/User/userRepository.php');
 $users =  (UserRepository::getAll());
+
+
 
 
 require_once('./GroupManager/Group.php');
 $groups =  (UserGroup::getAllGroups());
 // var_dump($users);
-// var_dump($users_);
+// var_dump($groups);
 
 $storages = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 2, 1, 2, 1, 2, 1, 2, 1, 2];
 ?>

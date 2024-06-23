@@ -1,6 +1,7 @@
 <?php
 
-require_once('api/sambaApi/storage/Storage.php');
+require_once('./api/sambaApi/storage/Storage.php');
+require_once('./GroupManager/Group.php');
 
 class UserRepository
 {
@@ -17,7 +18,7 @@ class UserRepository
     {
         $USER = [];
         $SmbdUser = UserRepository::getSambaUser();
-        // print_r($SmbdUser);
+        
 
         //get user in file /etc/passwd
         // $command = "grep -E '^[^:][^]:[0-9]{4,}:.*' /etc/passwd | awk -F: '$3 >= 1000 {print}'";
@@ -29,6 +30,8 @@ class UserRepository
         foreach ($userlines as $key => $user) {
             $userline = explode(':', $user);
             // echo $userline[0];echo '<br>';
+        // die();
+            
             if (count($userline) > 4 && in_array($userline[0],$SmbdUser) && !UserRepository::isIn($USER,'Nom',$userline[0])) {
     
                 //format to the same array
@@ -36,7 +39,14 @@ class UserRepository
                 $u['id'] = count($USER)+1;
                 $u['Nom'] = $userline[0];
                 $u['UID'] = $userline[2];
-                $u['Groups'] = str_replace(" "," , ",trim(str_replace("$userline[0] :","",shell_exec('groups ' . $userline[0]))));
+                $allUserGrp = explode(' ',str_replace("$userline[0] :","",shell_exec('groups ' . $userline[0])));
+                $grpNames = [];
+                foreach(UserGroup::sambGrp() as $uSamba){
+                    if(in_array($u['group'] ,$allUserGrp)){
+                        array_push($grpNames,$uSamba["group"]);
+                    }
+                }
+                $u['Groups'] = implode(' , ',$grpNames);
                 $u['repertoire'] = $userline[6];
                 $u['Usage'] = Storage::getStorageSize($userline[0]);
                 $u['max-usage'] = 200000;
@@ -45,7 +55,7 @@ class UserRepository
                 array_push($USER, $u);
             }
         }
-
+        // print_r($USER); echo '<br>';
         return  ($USER);
     }
     public static function extractUser($tableau) {

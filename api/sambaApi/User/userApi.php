@@ -14,10 +14,15 @@ require_once "./userRepository.php";
         echo json_encode(['status'=>1]);
     }
 
-    // if(isset($_GET['updateUSer']) && isset($_GET['passwd'])){
-    //     UserRepository::updateUSer($_GET['updateUSer'],$_GET['passwd']);
-    // }
+    if(isset($_GET['newUSer']) && isset($_GET['passwd'])){
+        echo $_GET['newUSer'], $_GET['passwd'] . '<br>';
+        // UserRepository::updateUSer($_GET['updateUSer'],$_GET['passwd']);
+    }
+    
+    // On efface l'utilisateur dans Samba si on reçoit un requete GET['removeUser']
+    if (isset($_GET['removeUser'])) {
+        UserGroup::removeUserToSamba($_GET['removeUser']);
+    }
 
-
-
+    
 ?>

@@ -32,8 +32,14 @@ function isGroupPage()
                 <?php if (isGroupPage()) : ?>
                     <td style="width:230px;">
                         <div class="d-flex gap-3">
-                            <button class="btn btn-primary" data-toggle="modal" data-target="#modalModificationGroup"> modifier</button>
-                            <button class="btn btn-danger"> supprimer</button>
+                            <button class="btn btn-primary" 
+                                data-toggle="modal" 
+                                data-target="#modalModificationGroup"
+                                data-groupname=<?= $a['Nom'] ?> 
+                                data-users="<?= $a['Users'] ?>"
+                                data-path=<?= $a['Path'] ?> 
+                            > modifier</button>
+                            <button class="btn btn-danger btn-group"> supprimer</button>
                         </div>
                     </td>
                 <?php endif ?>
@@ -58,11 +64,15 @@ function isGroupPage()
 				<form>
 					<div class="form-group">
 						<label for="nom">Nom du group:</label>
-						<input type="text" class="form-control" id="nom" placeholder="Entrez le nom">
+						<input type="text" class="form-control" id="nomModal" placeholder="Entrez le nom">
 					</div>
 					<div class="form-group">
-						<label for="email">users :</label>
-						<input type="email" class="form-control" id="email" placeholder="Entrez les utilisateurs">
+						<label for="email">Users :</label>
+						<input type="email" class="form-control" id="usersModal" placeholder="Entrez les utilisateurs">
+					</div>
+                    <div class="form-group">
+						<label for="email">Path :</label>
+						<input type="email" class="form-control" id="pathModal" placeholder="Entrez le path">
 					</div>
 					<!-- Ajoutez d'autres champs selon besoin -->
 				</form>
@@ -116,28 +126,54 @@ $(document).ready(function() {
 
         console.log('get data')
         // Utilisez $(this) pour accéder au modal
-        // var username__ = button.data('username'); // Correction ici
-        // var groups__ =   button.data('groups'); // Correction ici
-        // var storage__ =  button.data('storage'); // Correction ici
-        
+         var groupName = button.data('groupname'); // Correction ici
+         var users =   button.data('users'); // Correction ici
+         var path =  button.data('path'); // Correction ici
+// 
+         console.log(groupName,users,path)
+        // 
         // console.log(button.data('username'),username__,'io',$('#modalName'))
         // Mettez à jour les valeurs des champs
-        // document.querySelector('#modalName').innerText = username__;
-        // $('#groups').val(groups__);
-        // $('#floatInput').val(storage__);
+        document.querySelector('#modalName').innerText = username__;
+        $('#nomModal').val(groupName);
+        $('#usersModal').val(users);
+        $('#pathModal').val(path);
     });
 
-    $('#saveGroup').click(()=>{
-        console.log('click')
-        // let nUser = document.querySelector('#nomUser').value
-        // let pUser = document.querySelector('#passwdUser').value
-        // let gUser = document.querySelector('#grpUser').value
-        // // console.log(nUser,pUser,gUser)
-        // fetch(`http://localhost:8999/api/sambaApi/User/userApi.php?newUser=${nUser}&passwd=${pUser}`)
-        //     .then(e => e.json())
-        //     .then(res => {console.log(res);window.location.reload()})
+    let saveGroupBtn = document.querySelector('#saveGroup')
+    saveGroupBtn.addEventListener('click', ()=>{
+        let nUser = document.querySelector('#nomUser').value
+        let pUser = document.querySelector('#passwdUser').value
+        let gUser = document.querySelector('#grpUser').value
 
+        console.log(nUser,pUser,gUser)
+        fetch(`http://localhost:8999/api/sambaApi/User/userApi.php?newUser=${nUser}&passwd=${pUser}`)
+            .then(e => e.json())
+            .then(res => {console.log(res);window.location.reload()})
+        console.log("ok");
     });
+
+    let btnGroups = document.querySelectorAll('.btn-group')
+    for(let i=0; i<btnGroups.length; i++) {
+        btnGroups[i].addEventListener('click', function(){
+            console.log(this.parentNode.firstElementChild);
+            let user = this.parentNode.firstElementChild.dataset.groupname
+            console.log(user);
+
+            fetch(`http://localhost:8999/api/sambaApi/User/userApi.php?removeUser=${user}`,  {
+                    method: 'POST', // Méthode HTTP
+                    headers: {
+                        'Content-Type': 'application/json', // Type de contenuhttp://localhost:8999/api/sambaApi/User/userApi.php
+                        'Control-Allow-Origin': '*'
+                    },
+                    body: JSON.stringify(user)
+                })
+                .then( e => e.json() )
+                .then(res => {console.log(res);window.location.reload()})
+
+            console.log(`Removing user ${user}`);
+        })
+    }
 });
 
 

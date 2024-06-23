@@ -6,7 +6,7 @@
 class UserGroup
 {
 
-    public static $RACINEPATH = "/home/marius/Documents/COURS/Mr_Haga/Interface_samba/samba_interface_/";
+    public static $RACINEPATH = "/home/toavina-jr/Documents/Toavina/samba_interface_/";
 
     private static function getAllUser()
     {
@@ -90,11 +90,13 @@ class UserGroup
         foreach ($output as $p) {
             $e = explode(':', $p);
             if (isset($ue[$e[0]])) {
+                $users = [trim(shell_exec("getent group " . trim($e[1]) . " | cut -d: -f4")), $e[0]];
+                $users = array_filter($users);
                 $RESULT[] = [
                     'Nom' => $e[0],
                     'GID' => $e[1],
                     "Path" => $ue[$e[0]]['path'],
-                    "Users" => shell_exec("getent group " . trim($e[1]) . " | cut -d: -f4"),
+                    "Users" => implode(" , ",$users),
                     "created_at" => "23-01-2023 a 12h15",
                     "storage" => 8
                 ];
@@ -128,6 +130,8 @@ class UserGroup
 
         $command = UserGroup::$RACINEPATH . "shell/group.sh";
         $output = shell_exec($command);
+        // var_dump([$command,$output]);die();echo "<br>";
+
         $array = explode("\n", $output);
         $G = [];
         $tmpKey = 'default';
@@ -139,6 +143,8 @@ class UserGroup
             } else if ($g[0] == "G") {
                 $G[$tmpKey]['group'] = trim(str_replace("Group:", '', $g));
             }
+
+        // var_dump($g);echo "<br>";
         }
 
         // var_dump($G);echo "<br>";
@@ -192,6 +198,12 @@ class UserGroup
 
     public static function updateGroup($user, $groupsAdd, $groupsRemove)
     {
+
+    }
+
+    public static function removeUserToSamba($user) {
+        $commad = "sudo pdbedit -x -u {$user}";
+        shell_exec($commad);
     }
 
     /* **************************************************************** */

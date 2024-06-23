@@ -43,7 +43,7 @@ function isUserPage()
                             data-storage=<?= usagePerSum($a,1) ?> 
                             
                             > modifier</button>
-                            <button class="btn btn-danger"> supprimer</button>
+                            <button class="btn btn-danger btn-removeUser"> supprimer</button>
                         </div>
                     </td>
                 <?php endif ?>
@@ -161,12 +161,22 @@ $(document).ready(function() {
         // console.log(`http://localhost:8999/api/sambaApi/User/userApi.php?newUser=${nUser}&passwd=${pUser}&group=${gUser}`)
 
         // `http://localhost:8999/api/FileManager/__getFromPath.php?path=${path}`)
-        fetch(`http://localhost:8999/api/sambaApi/User/userApi.php?newUser=${nUser}&passwd=${pUser}`)
+        fetch(`http://localhost:8888/api/sambaApi/User/userApi.php?newUser=${nUser}&passwd=${pUser}`)
             .then(e => e.json())
             .then(res => {console.log(res);window.location.reload()})
 
     });
 });
 
+    let btnsRemoveUser = document.querySelectorAll('.btn-removeUser');
 
+    for(let i=0; i<btnsRemoveUser.length; i++) {
+        btnsRemoveUser[i].addEventListener('click', function () {
+            let user = this.parentNode.firstElementChild.dataset.username
+            
+            fetch(`http://localhost:8999/api/sambaApi/User/userApi.php?removeUser=${user}`)
+                .then( e => e.json() )
+                .then( res => { console.log("Envoyer de la donnée ", user);window.location.reload(); } )
+        });
+    }
 </script>
