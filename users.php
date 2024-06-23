@@ -45,7 +45,7 @@ function isGroupPage()
 					<h1>Total users :<span><?= count($users) ?></span> </h1>
 
 				</div>
-				<button class="btn btn-primary px-4" data-toggle="modal" data-target="#modalCreationUser"> Ajouter</button>
+				<button class="btn btn-primary px-4" data-toggle="modal" data-target="#modalCreationUser" id="create-user"> Ajouter</button>
 			</div>
 			<!-- -------------------------------- -->
 			<div class="component h-100" id="groupList">
@@ -55,6 +55,10 @@ function isGroupPage()
 
 		</div>
 	</div>
+
+	<script >
+		
+	</script>
 </body>
 
 </html>

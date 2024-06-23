@@ -74,7 +74,7 @@ function isUserPage()
                         <input type="email" class="form-control" id="groups" placeholder="Entrez les groups">
                     </div>
                     <div class="form-group">
-                        <label for="floatInput">stockage disponible :</label>
+                        <label for="floatInput">Stockage disponible :</label>
                         <input type="number" step="any" min="0" max="10000000" class="form-control" id="floatInput" placeholder="Entrez le stockage">
                     </div>
 
@@ -168,15 +168,20 @@ $(document).ready(function() {
     });
 });
 
+    // Attente d un click pour effacer l' utilisateur
     let btnsRemoveUser = document.querySelectorAll('.btn-removeUser');
 
     for(let i=0; i<btnsRemoveUser.length; i++) {
         btnsRemoveUser[i].addEventListener('click', function () {
             let user = this.parentNode.firstElementChild.dataset.username
             
-            fetch(`http://localhost:8999/api/sambaApi/User/userApi.php?removeUser=${user}`)
-                .then( e => e.json() )
-                .then( res => { console.log("Envoyer de la donnée ", user);window.location.reload(); } )
+            fetch(`http://localhost:8888/api/sambaApi/User/userApi.php?removeUser=${user}`)
+                .then( e => e.text() )
+                .then( res => { 
+                    // console.log("Envoyer de la donnée ", user);
+                    console.log(`localhost:8999/api/sambaApi/User/userApi.php?removeUser=${user}`);
+                    window.location.reload();
+                })
         });
     }
 </script>

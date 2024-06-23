@@ -1,7 +1,6 @@
 <?php
 
 require_once "./userRepository.php";
-
     if(isset($_GET['newUser']) && isset($_GET['passwd'])){
         $params = [
             "name"=>$_GET['newUser'],
@@ -21,6 +20,7 @@ require_once "./userRepository.php";
     
     // On efface l'utilisateur dans Samba si on reçoit un requete GET['removeUser']
     if (isset($_GET['removeUser'])) {
+        echo $_GET['removeUser'];
         UserGroup::removeUserToSamba($_GET['removeUser']);
     }
 
