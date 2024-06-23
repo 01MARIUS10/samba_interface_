@@ -1,6 +1,9 @@
 <?php
-    require('./GroupManager/Group.php');
+    require('api/sambaApi/User/userRepository.php');
+    $userName = "test";
+    $password = "azertyuiop";
+    $group = "TestGroup";
+    $stockage = 1000;
 
-    //  TEST POUR EFFACER L USER TAOVINA-JR DANS SAMBA
-    UserGroup::removeUserToSamba('toavina-jr');
+    UserRepository::ajouterUser($userName, $password, $group, $stockage);
 ?>

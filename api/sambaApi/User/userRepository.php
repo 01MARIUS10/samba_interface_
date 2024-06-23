@@ -81,6 +81,11 @@ class UserRepository
 
         return UserRepository::extractUser($lines);
     }
+
+    public static function createSimpleUnixUser($nom ) {
+        shell_exec("sudo useradd {$nom}");
+    }
+
     public static function  createUnixUser($params)
     {
         if (!isset($params['name'])) return 0;
@@ -123,6 +128,29 @@ class UserRepository
         $command = "sudo pdbedit -x {$user}";
         shell_exec($command);
     }
-}
 
+    public static function ajouterUser($nom, $password, $group, $stockage) {
+        // Création du group et de l user
+        UserRepository::createSimpleUnixUser($nom);
+        UserGroup::createUnixGroup($group);
+
+        // AJout de l user dans le group unix et samba
+        UserGroup::addUnixUserToGroupUnix($nom, $group);
+        UserGroup::addUnixUserToSamba($nom, $password);
+
+        // Création du dossier de partage
+        $command = "sudo mkdir -p /var/share/{$nom}";
+        shell_exec($command);
+
+        // Configuration popur le partage samba
+        $smbConf = "\n[{$nom}]\npath = /var/share/{$nom}\nwrite list = {$group}\n";
+
+        // AJout du text de configuration dan /etc/samba/smb.conf
+        $command = "sudo echo '{$smbConf}' >> /etc/samba/smb.conf";
+        shell_exec($command);
+        $restartSmbComd = "sudo systemctl restart smbd";
+        shell_exec($restartSmbComd);
+    }
+}
+// 
 UserRepository::getSambaUser();

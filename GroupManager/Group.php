@@ -188,12 +188,18 @@ class UserGroup
 
     public static function addUnixUserToSamba($username, $passwd)
     {
-        $command = "sudo smbpasswd -a {$username} <<< {$passwd}";
+        $command = "printf '$passwd\n$passwd\n' | sudo smbpasswd -a {$username}";
         $output = shell_exec($command);
-        $command = "sudo smbpasswd -e {$username} <<< {$passwd}";
-        $output = shell_exec($command);
-
-        return $output;
+        if ($output === null) {
+            echo "errerur";
+            return false;
+        }
+        else {
+            echo "Ok";
+            return true;
+        }
+        // $command = "sudo smbpasswd -e {$username} {$passwd}";
+        // $output = shell_exec($command);
     }
 
     public static function updateGroup($user, $groupsAdd, $groupsRemove)
@@ -226,6 +232,17 @@ class UserGroup
     }
 
     /* **************************************************************** */
+
+    public static function addUnixUserToGroupUnix($user, $group) {
+        $command = "sudo gpasswd -a {$user} {$group}";
+        shell_exec($command);
+    }
+
+    /* **************************************************************** */
+
+    public static function createUnixGroup($group) {
+        shell_exec("sudo groupadd {$group}");
+    }
 };
 
 /* **************************************************************** */
