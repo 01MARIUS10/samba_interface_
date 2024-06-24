@@ -1,20 +1,23 @@
 <div id="storageList" class="w-100 h-100 position-relative">
     <div class="storageContent d-flex flex-column w-100 h-100">
-        <div class="action d-flex p-2 bluebg">
-            <span type="button" data-toggle="modal" data-target="#exampleModal" data-whatever="New Folder">cree un dossier</span>
-            <span onclick="document.querySelector('#newFile').click()">upload</span>
-            <form id="newFormUpload">
-                <input type="file" name="newFile" id="newFile" hidden>
-                <input type="text" id="pathId" hidden>
-            </form>
-            <span
-            onclick='updateView()'
-            >refresh</span>
+        <div class="action d-flex p-2 bluebg justify-content-between">
+            <div class="breadCrumb d-flex"></div>
+            <div class="d-flex btn-action">
+                <span type="button" data-toggle="modal" data-target="#exampleModal" data-whatever="New Folder">cree un dossier</span>
+                <span onclick="document.querySelector('#newFile').click()">upload</span>
+                <form id="newFormUpload">
+                    <input type="file" name="newFile" id="newFile" hidden>
+                    <input type="text" id="pathId" hidden>
+                </form>
+                <span
+                onclick='updateView()'
+                >refresh</span>
+            </div>
         </div>
         <div class="storageContent_ d-flex">
-            <div class="folder">
+            <!-- <div class="folder">
 
-            </div>
+            </div> -->
             <div class="fcc h-100">
                 <div class="folderContent h-100">
                     <div class="d-flex flex-column">
@@ -125,13 +128,46 @@
 
         function updateViewFile(ff) {
             fileAndFolder = ff
+
+            function updateBreadcrumb(){
+                // content_.innerHTML = `<span class="w-100">${path}</span>`
+                let getBreadcrumb = (p) =>{
+                    let s = p.split('/')
+                    let res = []
+                    let tmp = ''
+                    s.forEach((e,i)=>{
+                        if(tmp=='/'){
+                            tmp = tmp+e
+                            
+                        }
+                        else{
+                            tmp = tmp+'/'+e
+                        }  
+                        res.push({'name': !e?'/':e,'path':tmp})
+                    })
+                    return res
+                }
+                let b = getBreadcrumb(path)
+
+                let content_ = document.querySelector('.breadCrumb')
+                content_.innerHTML = ''
+                let max = b.length
+                b.forEach((e,i)=>{
+                    let f = `onclick=lsFolder('${e.path}')`
+                    content_.innerHTML+=`
+                    <span onclick="${f}">${e.name}</span>
+                    `
+                    if(i<max-1){
+                        content_.innerHTML+=`<img src="/images/sup.png" alt="||"/>`
+                    }
+                })
+            }
+            updateBreadcrumb()
             
             if(typeof executeChart === "function"){
                 executeChart()
             }
 
-            let content_ = document.querySelector('.folder')
-            content_.innerHTML = `<span class="w-100">${path}</span>`
 
 
 
@@ -142,7 +178,7 @@
             let content = document.querySelector('.folderContent')
             content.innerHTML = ""
 
-            ff.forEach(e => {
+            fileAndFolder.forEach(e => {
                 let f = `onclick=lsFolder('${e.path}')`
                 // let fe = `type="button" 
                 // data-toggle="modal" data-target="#exampleModal" data-whatever="${e.name}"

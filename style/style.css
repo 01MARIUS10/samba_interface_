@@ -80,3 +80,29 @@ main > div:nth-child(8){
 .modal-backdrop {
     background-color: #0009 !important;
 }
+.btn-action > span{
+    background: whitesmoke;
+    margin:0 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding:5px;
+}
+
+.breadCrumb{
+    color:white;
+    width :calc(100% - 300px);
+    height: 40px;
+    scrollbar-width: none;
+    overflow-x: scroll;
+}
+.breadCrumb > span:hover{
+    /* background: white; */
+    color:#227cb9e8 !important;
+    transform: scale(1.4);
+    color:black;
+}
+.breadCrumb > span{
+    display: flex;
+    align-items: center;
+}

@@ -1,14 +1,13 @@
 <?php
-
-require_once('./api/sambaApi/storage/Storage.php');
-require_once('./GroupManager/Group.php');
+require_once('/home/marius/Documents/COURS/Mr_Haga/Interface_samba/samba_interface_/api/sambaApi/storage/Storage.php');
+require_once('/home/marius/Documents/COURS/Mr_Haga/Interface_samba/samba_interface_/GroupManager/Group.php');
 
 class UserRepository
 {
 
-    public static $RACINEPATH = "./";
+    private static $RACINEPATH = "/home/marius/Documents/COURS/Mr_Haga/Interface_samba/samba_interface_/";
 
-    public static function isIn($array,$key,$value){
+    private static function isIn($array,$key,$value){
         foreach($array as $a){
             if($a[$key]==$value){return true;}
         }
@@ -23,27 +22,25 @@ class UserRepository
         //get user in file /etc/passwd
         // $command = "grep -E '^[^:][^]:[0-9]{4,}:.*' /etc/passwd | awk -F: '$3 >= 1000 {print}'";
         $command = "grep -E '^[^:][^]:[0-9]{3,}:.*' /etc/passwd | awk -F: '$3 >= 1000 {print}'";
+        $command = "getent passwd | awk -F: '$3 >= 1000 && $3 < 65534' | grep -vE '^(root|bin|daemon|sys|sync|games|man|lp|mail|news|uucp|proxy|www-data|backup|list|irc|gnats|nobody|systemd|_apt|messagebus)$'";
         $output = shell_exec($command);
-        // print_r($output);
 
         $userlines = explode("\n", $output);
         foreach ($userlines as $key => $user) {
             $userline = explode(':', $user);
-            // echo $userline[0];echo '<br>';
-        // die();
+            
             
             if (count($userline) > 4 && in_array($userline[0],$SmbdUser) && !UserRepository::isIn($USER,'Nom',$userline[0])) {
     
                 //format to the same array
-                // $u['id'] = $key;
                 $u['id'] = count($USER)+1;
                 $u['Nom'] = $userline[0];
                 $u['UID'] = $userline[2];
-                $allUserGrp = explode(' ',str_replace("$userline[0] :","",shell_exec('groups ' . $userline[0])));
+                $allUserGrp = explode(' ',trim(str_replace("$userline[0] :","",shell_exec('groups ' . $userline[0]))));
                 $grpNames = [];
                 foreach(UserGroup::sambGrp() as $uSamba){
-                    if(in_array($u['group'] ,$allUserGrp)){
-                        array_push($grpNames,$uSamba["group"]);
+                    if(trim($uSamba['group']) !="" && in_array($uSamba['group'] ,$allUserGrp)){
+                        array_push($grpNames,$uSamba['group']);
                     }
                 }
                 $u['Groups'] = implode(' , ',$grpNames);
@@ -55,10 +52,19 @@ class UserRepository
                 array_push($USER, $u);
             }
         }
-        // print_r($USER); echo '<br>';
         return  ($USER);
     }
-    public static function extractUser($tableau) {
+
+    public static function getSambaUser(){
+        $command = "sudo pdbedit -L -v | grep '^Unix username:'"; 
+
+        $output = shell_exec($command);
+        $lines = (explode("\n",$output));
+
+        return UserRepository::extractUser($lines);
+    }
+
+    private static function extractUser($tableau) {
         $nomsUtilisateurs = [];
         foreach ($tableau as $element) {
             preg_match('/\s*:(.*)/', $element, $matches);
@@ -70,20 +76,12 @@ class UserRepository
         return $nomsUtilisateurs;
     }
 
-    public static function getSambaUser(){
-        $command = "sudo pdbedit -L -v | grep '^Unix username:'"; 
+    public static function getGroupId($groupName)
+    {
+        $command = "awk -F: '/^" . $groupName . ":/ {print $3}' /etc/group";
+        $output = exec($command);
 
-        $output = shell_exec($command);
-        $lines = (explode("\n",$output));
-
-        // print_r();
-        // print_r($lines);
-
-        return UserRepository::extractUser($lines);
-    }
-
-    public static function createSimpleUnixUser($nom ) {
-        shell_exec("sudo useradd {$nom}");
+        return $output;
     }
 
     public static function  createUnixUser($params)
@@ -110,13 +108,6 @@ class UserRepository
 
         return $output;
     }
-    public static function getGroupId($groupName)
-    {
-        $command = "awk -F: '/^" . $groupName . ":/ {print $3}' /etc/group";
-        $output = exec($command);
-
-        return $output;
-    }
 
     public static function addUnixUserToSamba($user,$passwd){
         $command = UserRepository::$RACINEPATH."shell/createUser.exp $user $passwd";
@@ -131,7 +122,7 @@ class UserRepository
 
     public static function ajouterUser($nom, $password, $group, $stockage) {
         // Création du group et de l user
-        UserRepository::createSimpleUnixUser($nom);
+        UserRepository::createUnixUser(['name'=>$nom]);
         UserGroup::createUnixGroup($group);
 
         // AJout de l user dans le group unix et samba
@@ -151,6 +142,22 @@ class UserRepository
         $restartSmbComd = "sudo systemctl restart smbd";
         shell_exec($restartSmbComd);
     }
+
+    public static function removeUserToSamba($user) {
+        $commad = "sudo pdbedit -x -u {$user}";
+        shell_exec($commad);
+    }
+
+    public function isUserExist($username){
+        $command = "grep '^$username:' /etc/passwd";
+        $output = shell_exec($command);
+        if($output){
+            return true;
+        }
+        return false;
+    }
+
+
 }
 // 
 UserRepository::getSambaUser();

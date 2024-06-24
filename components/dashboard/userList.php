@@ -43,7 +43,7 @@ function isUserPage()
                             data-storage=<?= usagePerSum($a,1) ?> 
                             
                             > modifier</button>
-                            <button class="btn btn-danger btn-removeUser"> supprimer</button>
+                            <button class="btn btn-danger deluser" data-deluser="<?= $a['Nom'] ?>"> supprimer</button>
                         </div>
                     </td>
                 <?php endif ?>
@@ -60,7 +60,7 @@ function isUserPage()
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="exampleModalLabel">Modification de l'utilisateur <span id="modalName" class='colorN'></span></h5>
+                <h5 class="modal-title" id="exampleModalLabel">Modification de l'utilisateur <span id="modalNameModif" class='colorN'></span></h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Fermer">
                     <span aria-hidden="true">&times;</span>
                 </button>
@@ -71,10 +71,15 @@ function isUserPage()
                     
                     <div class="form-group">
                         <label for="email">groups :</label>
-                        <input type="email" class="form-control" id="groups" placeholder="Entrez les groups">
+                        <select class="form-select form-control" aria-label="Default select example" id="grpUserModif">
+                            <option selected value="">Entrer vos groups</option>
+                            <?php foreach($groups as $g) :?>
+                            <option value="<?= $g['Nom']?>"><?= $g['Nom']?></option>
+                            <?php endforeach ;?>
+                        </select>
                     </div>
                     <div class="form-group">
-                        <label for="floatInput">Stockage disponible :</label>
+                        <label for="floatInput">stockage disponible :</label>
                         <input type="number" step="any" min="0" max="10000000" class="form-control" id="floatInput" placeholder="Entrez le stockage">
                     </div>
 
@@ -83,7 +88,7 @@ function isUserPage()
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Annuler</button>
-                <button type="submit" class="btn btn-primary">Sauvegarder</button>
+                <button type="submit" class="btn btn-primary" id="saveModification">Sauvegarder</button>
             </div>
         </div>
     </div>
@@ -147,7 +152,7 @@ $(document).ready(function() {
         
         console.log(button.data('username'),username__,'io',$('#modalName'))
         // Mettez à jour les valeurs des champs
-        document.querySelector('#modalName').innerText = username__;
+        document.querySelector('#modalNameModif').innerText = username__;
         $('#groups').val(groups__);
         $('#floatInput').val(storage__);
     });
@@ -157,31 +162,35 @@ $(document).ready(function() {
         let nUser = document.querySelector('#nomUser').value
         let pUser = document.querySelector('#passwdUser').value
         let gUser = document.querySelector('#grpUser').value
-        // console.log(nUser,pUser,gUser)
-        // console.log(`http://localhost:8999/api/sambaApi/User/userApi.php?newUser=${nUser}&passwd=${pUser}&group=${gUser}`)
 
-        // `http://localhost:8999/api/FileManager/__getFromPath.php?path=${path}`)
-        fetch(`http://localhost:8888/api/sambaApi/User/userApi.php?newUser=${nUser}&passwd=${pUser}`)
+        let tmp = gUser? `&group=${gUser}`:''
+        console.log(nUser,pUser,gUser,tmp)
+        fetch(`/api/sambaApi/User/userApi.php?newUser=${nUser}&passwd=${pUser}${tmp}`)
             .then(e => e.json())
             .then(res => {console.log(res);window.location.reload()})
 
     });
+    $('#saveModification').click(()=>{
+        console.log('click')
+        let nUser = document.querySelector('#modalNameModif').innerText
+        let gUser = document.querySelector('#grpUserModif').value
+
+        let tmp = gUser? `&group=${gUser}`:''
+        console.log(nUser,gUser,tmp)
+        fetch(`/api/sambaApi/User/userApi.php?modifyUser=${nUser}${tmp}`)
+            .then(e => e.json())
+            .then(res => {console.log(res);window.location.reload()})
+
+    });
+
+    $('.deluser').click((e)=>{
+        let username = e.target.getAttribute('data-deluser')
+        fetch(`/api/sambaApi/User/userApi.php?deluser=${username}`)
+            .then(e => e.json())
+            .then(res => {console.log(res);window.location.reload()})
+
+    })
 });
 
-    // Attente d un click pour effacer l' utilisateur
-    let btnsRemoveUser = document.querySelectorAll('.btn-removeUser');
 
-    for(let i=0; i<btnsRemoveUser.length; i++) {
-        btnsRemoveUser[i].addEventListener('click', function () {
-            let user = this.parentNode.firstElementChild.dataset.username
-            
-            fetch(`http://localhost:8888/api/sambaApi/User/userApi.php?removeUser=${user}`)
-                .then( e => e.text() )
-                .then( res => { 
-                    // console.log("Envoyer de la donnée ", user);
-                    console.log(`localhost:8999/api/sambaApi/User/userApi.php?removeUser=${user}`);
-                    window.location.reload();
-                })
-        });
-    }
 </script>

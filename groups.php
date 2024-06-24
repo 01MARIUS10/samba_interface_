@@ -7,7 +7,7 @@
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<link rel="stylesheet" href="style/bootstrap/bootstrap.css">
-	<link href="https://cdn.syncfusion.com/ej2/material.css" rel="stylesheet" />
+	<!-- <link href="https://cdn.syncfusion.com/ej2/material.css" rel="stylesheet" /> -->
 	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
 	<link rel="stylesheet" href="style/style.css">
 	<title>Document</title>
@@ -31,8 +31,9 @@
 	<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
 	<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 	<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-	<!-- <script src="https://cdn.syncfusion.com/ej2/dist/ej2.min.js"></script>
-	<link href="https://cdn.syncfusion.com/ej2/material.css" rel="stylesheet" /> -->
+	<!-- <script src="https://cdn.syncfusion.com/ej2/dist/ej2.min.js"></script> -->
+	
+	<!-- <link href="https://cdn.syncfusion.com/ej2/material.css" rel="stylesheet" /> --> 
 
 	<div id="root" class="d-flex ">
 		<div class="nav h-100 d-flex flex-column align-items-center justify-content-between p-2" style="width: 60px;">

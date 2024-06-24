@@ -16,8 +16,8 @@
 <body>
 
 	<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-	<!-- <script src="https://cdn.syncfusion.com/ej2/dist/ej2.min.js"></script>
-	<link href="https://cdn.syncfusion.com/ej2/material.css" rel="stylesheet" /> -->
+	<!-- <script src="https://cdn.syncfusion.com/ej2/dist/ej2.min.js"></script> -->
+	<!-- <link href="https://cdn.syncfusion.com/ej2/material.css" rel="stylesheet" /> -->
 
 	<div id="root" class="d-flex ">
 		<div class="nav h-100 d-flex flex-column align-items-center justify-content-between p-2" style="width: 60px;">

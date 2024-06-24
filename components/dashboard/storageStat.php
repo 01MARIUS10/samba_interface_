@@ -13,10 +13,12 @@
     }
 
     function getCharFormatData() {
+        let f = fileAndFolder.filter(e => e.name!='.' && e.name!='..')
+        console.log(f)
         return {
-            label: fileAndFolder.map(i => i.name),
-            data: fileAndFolder.map(i => i.size),
-            backgroundColor: fileAndFolder.map(i => getRandomRgb())
+            label: f.map(i => i.name),
+            data: f.map(i => i.size),
+            backgroundColor: f.map(i => getRandomRgb())
         };
     }
 

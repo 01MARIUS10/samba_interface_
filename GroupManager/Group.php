@@ -6,7 +6,7 @@
 class UserGroup
 {
 
-    public static $RACINEPATH = "/home/toavina-jr/Documents/Toavina/samba_interface_/";
+    public static $RACINEPATH = "/home/marius/Documents/COURS/Mr_Haga/Interface_samba/samba_interface_/";
 
     private static function getAllUser()
     {
@@ -87,6 +87,7 @@ class UserGroup
 
         exec($command, $output);
         $ue = UserGroup::sambGrp();
+        // var_dump($ue);die();
         foreach ($output as $p) {
             $e = explode(':', $p);
             if (isset($ue[$e[0]])) {
@@ -106,6 +107,33 @@ class UserGroup
         return $RESULT;
     }
 
+    public static function getGroupByName($name){
+        // COmmande
+        $command = "getent group | cut -d: -f1,3 | grep {$name}";
+        $RESULT = [];
+
+        exec($command, $output);
+        $ue = UserGroup::sambGrp();
+        // var_dump($ue);die();
+        foreach ($output as $p) {
+            $e = explode(':', $p);
+            if (isset($ue[$e[0]])) {
+                $users = [trim(shell_exec("getent group " . trim($e[1]) . " | cut -d: -f4")), $e[0]];
+                $users = array_filter($users);
+                $RESULT[] = [
+                    'Nom' => $e[0],
+                    'GID' => $e[1],
+                    "Path" => $ue[$e[0]]['path'],
+                    "Users" => implode(" , ",$users),
+                    "created_at" => "23-01-2023 a 12h15",
+                    "storage" => 8
+                ];
+            }
+        }
+
+        return $RESULT[0];
+    }
+
     public static function extractGrp($tableau)
     {
         $grps = [];
@@ -119,14 +147,15 @@ class UserGroup
                 }
             }
         }
+        // var_dump($grps);
         return $grps;
     }
 
     public static function sambGrp()
     {
-        $command = "grep -v '^;' /etc/samba/smb.conf | grep 'write list =' ";
-        $output = shell_exec($command);
-        $lines = (explode("\n", $output));
+        // $command = "grep -v '^;' /etc/samba/smb.conf | grep 'write list =' ";
+        // $output = shell_exec($command);
+        // $lines = (explode("\n", $output));
 
         $command = UserGroup::$RACINEPATH . "shell/group.sh";
         $output = shell_exec($command);
@@ -191,15 +220,11 @@ class UserGroup
         $command = "printf '$passwd\n$passwd\n' | sudo smbpasswd -a {$username}";
         $output = shell_exec($command);
         if ($output === null) {
-            echo "errerur";
             return false;
         }
         else {
-            echo "Ok";
             return true;
         }
-        // $command = "sudo smbpasswd -e {$username} {$passwd}";
-        // $output = shell_exec($command);
     }
 
     public static function updateGroup($user, $groupsAdd, $groupsRemove)
@@ -207,10 +232,16 @@ class UserGroup
 
     }
 
-    public static function removeUserToSamba($user) {
-        $commad = "sudo pdbedit -x -u {$user}";
-        shell_exec($commad);
+    public function isGroupExist($groupName){
+        $command = "getent group $groupName";
+        $output = shell_exec($command);
+        if($output){
+            return true;
+        }
+        return false;
     }
+
+    
 
     /* **************************************************************** */
 

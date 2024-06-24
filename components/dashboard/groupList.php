@@ -39,7 +39,7 @@ function isGroupPage()
                                 data-users="<?= $a['Users'] ?>"
                                 data-path=<?= $a['Path'] ?> 
                             > modifier</button>
-                            <button class="btn btn-danger btn-group"> supprimer</button>
+                            <button class="btn btn-danger btn-group removeGrp" data-groupname=<?= $a['Nom'] ?>> supprimer</button>
                         </div>
                     </td>
                 <?php endif ?>
@@ -100,10 +100,10 @@ function isGroupPage()
                 <form>
                     <div class="form-group">
                         <label for="nomGroup">Nom :</label>
-                        <input type="email" class="form-control" id="nomGroup" placeholder="Entrez le nom">
+                        <input type="email" class="form-control" id="newGroup" placeholder="Entrez le nom">
                     </div>
                     <div class="form-group">
-                        <label for="pathGroup">password :</label>
+                        <label for="pathGroup">dossier partager :</label>
                         <input type="text" class="form-control" id="pathGroup" placeholder="Entrez le path">
                     </div>
 
@@ -112,7 +112,7 @@ function isGroupPage()
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Annuler</button>
-                <button type="submit" class="btn btn-primary" id="saveGroup">Sauvegarder</button>
+                <button type="submit" class="btn btn-primary" id="saveNewGroup">Sauvegarder</button>
             </div>
         </div>
     </div>
@@ -129,25 +129,32 @@ $(document).ready(function() {
          var groupName = button.data('groupname'); // Correction ici
          var users =   button.data('users'); // Correction ici
          var path =  button.data('path'); // Correction ici
-// 
+ 
          console.log(groupName,users,path)
         // 
         // console.log(button.data('username'),username__,'io',$('#modalName'))
         // Mettez à jour les valeurs des champs
-        document.querySelector('#modalName').innerText = username__;
+        // document.querySelector('#modalName').innerText = username__;
         $('#nomModal').val(groupName);
         $('#usersModal').val(users);
         $('#pathModal').val(path);
     });
 
-    let saveGroupBtn = document.querySelector('#saveGroup')
-    saveGroupBtn.addEventListener('click', ()=>{
-        let nUser = document.querySelector('#nomUser').value
-        let pUser = document.querySelector('#passwdUser').value
-        let gUser = document.querySelector('#grpUser').value
+    $('.removeGrp').click((e)=>{
+        let groupnme = e.target.getAttribute('data-groupname')
+        fetch(`/api/sambaApi/User/userApi.php?removeGrp=${groupnme}`)
+            .then(e => e.json())
+            .then(res => {console.log(res);window.location.reload()})
 
-        console.log(nUser,pUser,gUser)
-        fetch(`http://localhost:8999/api/sambaApi/User/userApi.php?newUser=${nUser}&passwd=${pUser}`)
+    })
+
+    let saveNewGroupBtn = document.querySelector('#saveNewGroup')
+    saveNewGroupBtn.addEventListener('click', ()=>{
+        let nGroup = document.querySelector('#newGroup').value
+        let pGroup = document.querySelector('#pathGroup').value
+
+        console.log(nGroup,pGroup)
+        fetch(`http://localhost:8999/api/sambaApi/User/userApi.php?newGrp=${nGroup}&pathGroup=${pGroup}`)
             .then(e => e.json())
             .then(res => {console.log(res);window.location.reload()})
         console.log("ok");
